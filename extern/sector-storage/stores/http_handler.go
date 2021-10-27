@@ -21,9 +21,9 @@ import (
 
 var log = logging.Logger("stores")
 
-var _ PartialFileHandler = &DefaultPartialFileHandler{}
+var _ partialFileHandler = &DefaultPartialFileHandler{}
 
-// DefaultPartialFileHandler is the default implementation of the PartialFileHandler interface.
+// DefaultPartialFileHandler is the default implementation of the partialFileHandler interface.
 // This is probably the only implementation we'll ever use because the purpose of the
 // interface to is to mock out partial file related functionality during testing.
 type DefaultPartialFileHandler struct{}
@@ -46,7 +46,7 @@ func (d *DefaultPartialFileHandler) Close(pf *partialfile.PartialFile) error {
 
 type FetchHandler struct {
 	Local     Store
-	PfHandler PartialFileHandler
+	PfHandler partialFileHandler
 }
 
 func (handler *FetchHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) { // /remote/
@@ -179,7 +179,7 @@ func (handler *FetchHandler) remoteDeleteSector(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	if err := handler.Local.Remove(r.Context(), id, ft, false, []ID{ID(r.FormValue("keep"))}); err != nil {
+	if err := handler.Local.Remove(r.Context(), id, ft, false); err != nil {
 		log.Errorf("%+v", err)
 		w.WriteHeader(500)
 		return

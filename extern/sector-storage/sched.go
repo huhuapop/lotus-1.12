@@ -78,12 +78,12 @@ type workerHandle struct {
 
 	info storiface.WorkerInfo
 
-	preparing *activeResources // use with workerHandle.lk
-	active    *activeResources // use with workerHandle.lk
+	preparing *activeResources
+	active    *activeResources
 
-	lk sync.Mutex // can be taken inside sched.workersLk.RLock
+	lk sync.Mutex
 
-	wndLk         sync.Mutex // can be taken inside sched.workersLk.RLock
+	wndLk         sync.Mutex
 	activeWindows []*schedWindow
 
 	enabled bool
@@ -117,8 +117,7 @@ type activeResources struct {
 	gpuUsed    bool
 	cpuUse     uint64
 
-	cond    *sync.Cond
-	waiting int
+	cond *sync.Cond
 }
 
 type workerRequest struct {
@@ -155,9 +154,8 @@ func newScheduler() *scheduler {
 		schedQueue: &requestQueue{},
 
 		workTracker: &workTracker{
-			done:     map[storiface.CallID]struct{}{},
-			running:  map[storiface.CallID]trackedWork{},
-			prepared: map[uuid.UUID]trackedWork{},
+			done:    map[storiface.CallID]struct{}{},
+			running: map[storiface.CallID]trackedWork{},
 		},
 
 		info: make(chan func(interface{})),

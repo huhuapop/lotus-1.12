@@ -27,14 +27,8 @@ type Resources struct {
  64  * 0.92 = 58
  128 * 0.92 = 117
 
- 48 * 0.66 = 31
-
- 48 *0.33 = 16
-
- 48 *0.16 = 8
 */
-// var ParallelNum uint64 = 92
-var ParallelNum uint64 = 16
+var ParallelNum uint64 = 92
 var ParallelDenom uint64 = 100
 
 // TODO: Take NUMA into account
@@ -140,7 +134,6 @@ var ResourceTable = map[sealtasks.TaskType]map[abi.RegisteredSealProof]Resources
 			MaxMemory: 30 << 30,
 			MinMemory: 30 << 30,
 
-			//-1 use all cores, 2  will let it lowly
 			MaxParallelism: -1,
 			CanGPU:         true,
 
@@ -150,7 +143,6 @@ var ResourceTable = map[sealtasks.TaskType]map[abi.RegisteredSealProof]Resources
 			MaxMemory: 15 << 30,
 			MinMemory: 15 << 30,
 
-			//-1 use all cores, 2  will let it lowly
 			MaxParallelism: -1,
 			CanGPU:         true,
 
@@ -160,7 +152,6 @@ var ResourceTable = map[sealtasks.TaskType]map[abi.RegisteredSealProof]Resources
 			MaxMemory: 3 << 29, // 1.5G
 			MinMemory: 1 << 30,
 
-			//-1 use all cores, 2  will let it lowly
 			MaxParallelism: -1,
 
 			BaseMinMemory: 1 << 30,
@@ -169,7 +160,6 @@ var ResourceTable = map[sealtasks.TaskType]map[abi.RegisteredSealProof]Resources
 			MaxMemory: 2 << 10,
 			MinMemory: 2 << 10,
 
-			//-1 use all cores, 2  will let it lowly
 			MaxParallelism: -1,
 
 			BaseMinMemory: 2 << 10,
@@ -178,7 +168,6 @@ var ResourceTable = map[sealtasks.TaskType]map[abi.RegisteredSealProof]Resources
 			MaxMemory: 8 << 20,
 			MinMemory: 8 << 20,
 
-			//-1 use all cores, 2  will let it lowly
 			MaxParallelism: -1,
 
 			BaseMinMemory: 8 << 20,

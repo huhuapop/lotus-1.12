@@ -36,7 +36,6 @@ import (
 	"github.com/filecoin-project/lotus/markets"
 	marketevents "github.com/filecoin-project/lotus/markets/loggers"
 	"github.com/filecoin-project/lotus/markets/retrievaladapter"
-	"github.com/filecoin-project/lotus/node/config"
 	"github.com/filecoin-project/lotus/node/impl/full"
 	payapi "github.com/filecoin-project/lotus/node/impl/paych"
 	"github.com/filecoin-project/lotus/node/modules/dtypes"
@@ -113,7 +112,7 @@ func NewClientGraphsyncDataTransfer(lc fx.Lifecycle, h host.Host, gs dtypes.Grap
 	net := dtnet.NewFromLibp2pHost(h, dtRetryParams)
 
 	dtDs := namespace.Wrap(ds, datastore.NewKey("/datatransfer/client/transfers"))
-	transport := dtgstransport.NewTransport(h.ID(), gs, net)
+	transport := dtgstransport.NewTransport(h.ID(), gs)
 	err := os.MkdirAll(filepath.Join(r.Path(), "data-transfer"), 0755) //nolint: gosec
 	if err != nil && !os.IsExist(err) {
 		return nil, err
@@ -183,7 +182,7 @@ func StorageClient(lc fx.Lifecycle, h host.Host, dataTransfer dtypes.ClientDataT
 	marketsRetryParams := smnet.RetryParameters(time.Second, 5*time.Minute, 15, 5)
 	net := smnet.NewFromLibp2pHost(h, marketsRetryParams)
 
-	c, err := storageimpl.NewClient(net, dataTransfer, discovery, deals, scn, accessor, storageimpl.DealPollingInterval(time.Second), storageimpl.MaxTraversalLinks(config.MaxTraversalLinks))
+	c, err := storageimpl.NewClient(net, dataTransfer, discovery, deals, scn, accessor, storageimpl.DealPollingInterval(time.Second))
 	if err != nil {
 		return nil, err
 	}

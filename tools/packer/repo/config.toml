@@ -20,8 +20,7 @@ ListenAddresses = ["/ip4/0.0.0.0/tcp/5678", "/ip6/::/tcp/5678"]
 #  IpfsOnlineMode = false
 #  IpfsMAddr = ""
 #  IpfsUseForRetrieval = false
-#  SimultaneousTransfersForStorage = 20
-#  SimultaneousTransfersForRetrieval = 20
+#  SimultaneousTransfers = 20
 #
 [Metrics]
 #  Nickname = ""

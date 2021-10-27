@@ -11,9 +11,7 @@ func (a *activeResources) withResources(id WorkerID, wr storiface.WorkerInfo, r 
 		if a.cond == nil {
 			a.cond = sync.NewCond(locker)
 		}
-		a.waiting++
 		a.cond.Wait()
-		a.waiting--
 	}
 
 	a.add(wr.Resources, r)
@@ -21,13 +19,11 @@ func (a *activeResources) withResources(id WorkerID, wr storiface.WorkerInfo, r 
 	err := cb()
 
 	a.free(wr.Resources, r)
+	if a.cond != nil {
+		a.cond.Broadcast()
+	}
 
 	return err
-}
-
-// must be called with the same lock as the one passed to withResources
-func (a *activeResources) hasWorkWaiting() bool {
-	return a.waiting > 0
 }
 
 func (a *activeResources) add(wr storiface.WorkerResources, r Resources) {
@@ -46,10 +42,6 @@ func (a *activeResources) free(wr storiface.WorkerResources, r Resources) {
 	a.cpuUse -= r.Threads(wr.CPUs)
 	a.memUsedMin -= r.MinMemory
 	a.memUsedMax -= r.MaxMemory
-
-	if a.cond != nil {
-		a.cond.Broadcast()
-	}
 }
 
 // canHandleRequest evaluates if the worker has enough available resources to

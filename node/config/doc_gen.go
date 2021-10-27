@@ -92,18 +92,11 @@ your node if metadata log is disabled`,
 			Comment: ``,
 		},
 		{
-			Name: "SimultaneousTransfersForStorage",
+			Name: "SimultaneousTransfers",
 			Type: "uint64",
 
 			Comment: `The maximum number of simultaneous data transfers between the client
-and storage providers for storage deals`,
-		},
-		{
-			Name: "SimultaneousTransfersForRetrieval",
-			Type: "uint64",
-
-			Comment: `The maximum number of simultaneous data transfers between the client
-and storage providers for retrieval deals`,
+and storage providers`,
 		},
 	},
 	"Common": []DocField{
@@ -267,22 +260,10 @@ as a multiplier of the minimum collateral bound`,
 passed to the sealing node by the markets service. 0 is unlimited.`,
 		},
 		{
-			Name: "SimultaneousTransfersForStorage",
+			Name: "SimultaneousTransfers",
 			Type: "uint64",
 
-			Comment: `The maximum number of parallel online data transfers for storage deals`,
-		},
-		{
-			Name: "SimultaneousTransfersForRetrieval",
-			Type: "uint64",
-
-			Comment: `The maximum number of parallel online data transfers for retrieval deals`,
-		},
-		{
-			Name: "StartEpochSealingBuffer",
-			Type: "uint64",
-
-			Comment: `Minimum start epoch buffer to give time for sealing of sector with deal.`,
+			Comment: `The maximum number of parallel online data transfers (storage+retrieval)`,
 		},
 		{
 			Name: "Filter",

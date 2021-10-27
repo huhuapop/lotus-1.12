@@ -395,9 +395,7 @@ func (st *Local) Reserve(ctx context.Context, sid storage.SectorRef, ft storifac
 		overhead := int64(overheadTab[fileType]) * int64(ssize) / storiface.FSOverheadDen
 
 		if stat.Available < overhead {
-			// 根据默然代码更改 启用
-			// https://github.com/moran666666/lotus-1.5.0/commit/f5fd924177eddc6f40af093f23d2f13d99ab0808
-			//return nil, storiface.Err(storiface.ErrTempAllocateSpace, xerrors.Errorf("can't reserve %d bytes in '%s' (id:%s), only %d available", overhead, p.local, id, stat.Available))
+			return nil, storiface.Err(storiface.ErrTempAllocateSpace, xerrors.Errorf("can't reserve %d bytes in '%s' (id:%s), only %d available", overhead, p.local, id, stat.Available))
 		}
 
 		p.reserved += overhead
@@ -546,7 +544,7 @@ func (st *Local) Local(ctx context.Context) ([]StoragePath, error) {
 	return out, nil
 }
 
-func (st *Local) Remove(ctx context.Context, sid abi.SectorID, typ storiface.SectorFileType, force bool, keepIn []ID) error {
+func (st *Local) Remove(ctx context.Context, sid abi.SectorID, typ storiface.SectorFileType, force bool) error {
 	if bits.OnesCount(uint(typ)) != 1 {
 		return xerrors.New("delete expects one file type")
 	}
@@ -560,14 +558,7 @@ func (st *Local) Remove(ctx context.Context, sid abi.SectorID, typ storiface.Sec
 		return xerrors.Errorf("can't delete sector %v(%d), not found", sid, typ)
 	}
 
-storeLoop:
 	for _, info := range si {
-		for _, id := range keepIn {
-			if id == info.ID {
-				continue storeLoop
-			}
-		}
-
 		if err := st.removeSector(ctx, sid, typ, info.ID); err != nil {
 			return err
 		}

@@ -100,7 +100,7 @@ var ChainNode = Options(
 	Override(new(*dtypes.MpoolLocker), new(dtypes.MpoolLocker)),
 
 	// Shared graphsync (markets, serving chain)
-	Override(new(dtypes.Graphsync), modules.Graphsync(config.DefaultFullNode().Client.SimultaneousTransfersForStorage, config.DefaultFullNode().Client.SimultaneousTransfersForRetrieval)),
+	Override(new(dtypes.Graphsync), modules.Graphsync(config.DefaultFullNode().Client.SimultaneousTransfers)),
 
 	// Service: Wallet
 	Override(new(*messagesigner.MessageSigner), messagesigner.NewMessageSigner),
@@ -219,7 +219,7 @@ func ConfigFullNode(c interface{}) Option {
 				Override(new(retrievalmarket.BlockstoreAccessor), modules.IpfsRetrievalBlockstoreAccessor),
 			),
 		),
-		Override(new(dtypes.Graphsync), modules.Graphsync(cfg.Client.SimultaneousTransfersForStorage, cfg.Client.SimultaneousTransfersForRetrieval)),
+		Override(new(dtypes.Graphsync), modules.Graphsync(cfg.Client.SimultaneousTransfers)),
 
 		If(cfg.Wallet.RemoteBackend != "",
 			Override(new(*remotewallet.RemoteWallet), remotewallet.SetupRemoteWallet(cfg.Wallet.RemoteBackend)),

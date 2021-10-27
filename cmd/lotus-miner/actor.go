@@ -283,7 +283,6 @@ var actorWithdrawCmd = &cli.Command{
 
 		// wait for it to get mined into a block
 		fmt.Printf("waiting for %d epochs for confirmation..\n", uint64(cctx.Int("confidence")))
-
 		wait, err := api.StateWaitMsg(ctx, smsg.Cid(), uint64(cctx.Int("confidence")))
 		if err != nil {
 			return err
@@ -730,6 +729,12 @@ var actorSetOwnerCmd = &cli.Command{
 			return fmt.Errorf("must pass new owner address and sender address")
 		}
 
+		nodeApi, closer, err := lcli.GetStorageMinerAPI(cctx)
+		if err != nil {
+			return err
+		}
+		defer closer()
+
 		api, acloser, err := lcli.GetFullNodeAPI(cctx)
 		if err != nil {
 			return err
@@ -758,7 +763,7 @@ var actorSetOwnerCmd = &cli.Command{
 			return err
 		}
 
-		maddr, err := getActorAddress(ctx, cctx)
+		maddr, err := nodeApi.ActorAddress(ctx)
 		if err != nil {
 			return err
 		}

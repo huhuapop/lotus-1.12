@@ -38,7 +38,6 @@ import (
 	"github.com/ipfs/go-datastore"
 	"github.com/ipfs/go-datastore/namespace"
 	graphsync "github.com/ipfs/go-graphsync/impl"
-	graphsyncimpl "github.com/ipfs/go-graphsync/impl"
 	gsnet "github.com/ipfs/go-graphsync/network"
 	"github.com/ipfs/go-graphsync/storeutil"
 	"github.com/libp2p/go-libp2p-core/host"
@@ -71,10 +70,7 @@ import (
 	"github.com/filecoin-project/lotus/storage"
 )
 
-var (
-	StorageCounterDSPrefix = "/storage/nextid"
-	StagingAreaDirName     = "deal-staging"
-)
+var StorageCounterDSPrefix = "/storage/nextid"
 
 func minerAddrFromDS(ds dtypes.MetadataDS) (address.Address, error) {
 	maddrb, err := ds.Get(datastore.NewKey("miner-address"))
@@ -341,7 +337,7 @@ func NewProviderDAGServiceDataTransfer(lc fx.Lifecycle, h host.Host, gs dtypes.S
 	net := dtnet.NewFromLibp2pHost(h)
 
 	dtDs := namespace.Wrap(ds, datastore.NewKey("/datatransfer/provider/transfers"))
-	transport := dtgstransport.NewTransport(h.ID(), gs, net)
+	transport := dtgstransport.NewTransport(h.ID(), gs)
 	err := os.MkdirAll(filepath.Join(r.Path(), "data-transfer"), 0755) //nolint: gosec
 	if err != nil && !os.IsExist(err) {
 		return nil, err
@@ -395,20 +391,11 @@ func StagingBlockstore(lc fx.Lifecycle, mctx helpers.MetricsCtx, r repo.LockedRe
 
 // StagingGraphsync creates a graphsync instance which reads and writes blocks
 // to the StagingBlockstore
-func StagingGraphsync(parallelTransfersForStorage uint64, parallelTransfersForRetrieval uint64) func(mctx helpers.MetricsCtx, lc fx.Lifecycle, ibs dtypes.StagingBlockstore, h host.Host) dtypes.StagingGraphsync {
+func StagingGraphsync(parallelTransfers uint64) func(mctx helpers.MetricsCtx, lc fx.Lifecycle, ibs dtypes.StagingBlockstore, h host.Host) dtypes.StagingGraphsync {
 	return func(mctx helpers.MetricsCtx, lc fx.Lifecycle, ibs dtypes.StagingBlockstore, h host.Host) dtypes.StagingGraphsync {
 		graphsyncNetwork := gsnet.NewFromLibp2pHost(h)
 		lsys := storeutil.LinkSystemForBlockstore(ibs)
-		gs := graphsync.New(helpers.LifecycleCtx(mctx, lc),
-			graphsyncNetwork,
-			lsys,
-			graphsync.RejectAllRequestsByDefault(),
-			graphsync.MaxInProgressIncomingRequests(parallelTransfersForRetrieval),
-			graphsync.MaxInProgressOutgoingRequests(parallelTransfersForStorage),
-			graphsyncimpl.MaxLinksPerIncomingRequests(config.MaxTraversalLinks),
-			graphsyncimpl.MaxLinksPerOutgoingRequests(config.MaxTraversalLinks))
-
-		graphsyncStats(mctx, lc, gs)
+		gs := graphsync.New(helpers.LifecycleCtx(mctx, lc), graphsyncNetwork, lsys, graphsync.RejectAllRequestsByDefault(), graphsync.MaxInProgressRequests(parallelTransfers))
 
 		return gs
 	}
@@ -549,8 +536,7 @@ func BasicDealFilter(cfg config.DealmakingConfig, user dtypes.StorageDealFilter)
 				return false, "miner error", err
 			}
 
-			dir := filepath.Join(r.Path(), StagingAreaDirName)
-			diskUsageBytes, err := r.DiskUsage(dir)
+			diskUsageBytes, err := r.DiskUsage(r.Path() + "/deal-staging")
 			if err != nil {
 				return false, "miner error", err
 			}
@@ -588,7 +574,7 @@ func StorageProvider(minerAddress dtypes.MinerAddress,
 ) (storagemarket.StorageProvider, error) {
 	net := smnet.NewFromLibp2pHost(h)
 
-	dir := filepath.Join(r.Path(), StagingAreaDirName)
+	dir := filepath.Join(r.Path(), "deal-staging")
 
 	// migrate temporary files that were created directly under the repo, by
 	// moving them to the new directory and symlinking them.
@@ -944,8 +930,6 @@ func ToSealingConfig(cfg *config.StorageMiner) sealiface.Config {
 		TerminateBatchMax:  cfg.Sealing.TerminateBatchMax,
 		TerminateBatchMin:  cfg.Sealing.TerminateBatchMin,
 		TerminateBatchWait: time.Duration(cfg.Sealing.TerminateBatchWait),
-
-		StartEpochSealingBuffer: abi.ChainEpoch(cfg.Dealmaking.StartEpochSealingBuffer),
 	}
 }
 

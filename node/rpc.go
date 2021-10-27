@@ -25,7 +25,6 @@ import (
 	"github.com/filecoin-project/lotus/api/v1api"
 	"github.com/filecoin-project/lotus/lib/rpcenc"
 	"github.com/filecoin-project/lotus/metrics"
-	"github.com/filecoin-project/lotus/metrics/proxy"
 	"github.com/filecoin-project/lotus/node/impl"
 )
 
@@ -79,7 +78,7 @@ func FullNodeHandler(a v1api.FullNode, permissioned bool, opts ...jsonrpc.Server
 		m.Handle(path, handler)
 	}
 
-	fnapi := proxy.MetricedFullAPI(a)
+	fnapi := metrics.MetricedFullAPI(a)
 	if permissioned {
 		fnapi = api.PermissionedFullAPI(fnapi)
 	}
@@ -114,7 +113,7 @@ func FullNodeHandler(a v1api.FullNode, permissioned bool, opts ...jsonrpc.Server
 func MinerHandler(a api.StorageMiner, permissioned bool) (http.Handler, error) {
 	m := mux.NewRouter()
 
-	mapi := proxy.MetricedStorMinerAPI(a)
+	mapi := metrics.MetricedStorMinerAPI(a)
 	if permissioned {
 		mapi = api.PermissionedStorMinerAPI(mapi)
 	}

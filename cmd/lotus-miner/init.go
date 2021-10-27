@@ -564,7 +564,7 @@ func makeHostKey(lr repo.LockedRepo) (crypto.PrivKey, error) {
 		return nil, err
 	}
 
-	kbytes, err := crypto.MarshalPrivateKey(pk)
+	kbytes, err := pk.Bytes()
 	if err != nil {
 		return nil, err
 	}

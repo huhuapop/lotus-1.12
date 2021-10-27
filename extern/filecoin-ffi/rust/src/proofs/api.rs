@@ -12,7 +12,7 @@ use filecoin_proofs_api::{
     StorageProofsError, UnpaddedByteIndex, UnpaddedBytesAmount,
 };
 
-use blstrs::Scalar as Fr;
+use bellperson::bls::Fr;
 use log::{error, info};
 use rayon::prelude::*;
 

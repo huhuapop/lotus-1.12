@@ -1,4 +1,4 @@
-package proxy
+package metrics
 
 import (
 	"context"
@@ -7,7 +7,6 @@ import (
 	"go.opencensus.io/tag"
 
 	"github.com/filecoin-project/lotus/api"
-	"github.com/filecoin-project/lotus/metrics"
 )
 
 func MetricedStorMinerAPI(a api.StorageMiner) api.StorageMiner {
@@ -53,8 +52,8 @@ func proxy(in interface{}, outstr interface{}) {
 			rint.Field(f).Set(reflect.MakeFunc(field.Type, func(args []reflect.Value) (results []reflect.Value) {
 				ctx := args[0].Interface().(context.Context)
 				// upsert function name into context
-				ctx, _ = tag.New(ctx, tag.Upsert(metrics.Endpoint, field.Name))
-				stop := metrics.Timer(ctx, metrics.APIRequestDuration)
+				ctx, _ = tag.New(ctx, tag.Upsert(Endpoint, field.Name))
+				stop := Timer(ctx, APIRequestDuration)
 				defer stop()
 				// pass tagged ctx back into function call
 				args[0] = reflect.ValueOf(ctx)

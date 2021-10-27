@@ -47,8 +47,6 @@ type WorkerStats struct {
 }
 
 const (
-	RWPrepared = 1
-	RWRunning  = 0
 	RWRetWait  = -1
 	RWReturned = -2
 	RWRetDone  = -3
@@ -59,8 +57,7 @@ type WorkerJob struct {
 	Sector abi.SectorID
 	Task   sealtasks.TaskType
 
-	// 2+ - assigned
-	// 1  - prepared
+	// 1+ - assigned
 	// 0  - running
 	// -1 - ret-wait
 	// -2 - returned

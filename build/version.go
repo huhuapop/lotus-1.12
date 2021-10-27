@@ -12,10 +12,11 @@ const (
 	BuildDebug        = 0x3
 	BuildCalibnet     = 0x4
 	BuildInteropnet   = 0x5
+	BuildNerpanet     = 0x6
 	BuildButterflynet = 0x7
 )
 
-func BuildTypeString() string {
+func buildType() string {
 	switch BuildType {
 	case BuildDefault:
 		return ""
@@ -29,6 +30,8 @@ func BuildTypeString() string {
 		return "+calibnet"
 	case BuildInteropnet:
 		return "+interopnet"
+	case BuildNerpanet:
+		return "+nerpanet"
 	case BuildButterflynet:
 		return "+butterflynet"
 	default:
@@ -37,12 +40,12 @@ func BuildTypeString() string {
 }
 
 // BuildVersion is the local build version
-const BuildVersion = "1.13.1-dev"
+const BuildVersion = "1.12.0"
 
 func UserVersion() string {
 	if os.Getenv("LOTUS_VERSION_IGNORE_COMMIT") == "1" {
 		return BuildVersion
 	}
 
-	return BuildVersion + BuildTypeString() + CurrentCommit
+	return BuildVersion + buildType() + CurrentCommit
 }

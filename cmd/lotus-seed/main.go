@@ -94,10 +94,9 @@ var preSealCmd = &cli.Command{
 			Name:  "fake-sectors",
 			Value: false,
 		},
-		&cli.UintFlag{
+		&cli.IntFlag{
 			Name:  "network-version",
 			Usage: "specify network version",
-			Value: uint(build.NewestNetworkVersion),
 		},
 	},
 	Action: func(c *cli.Context) error {

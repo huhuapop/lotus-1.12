@@ -297,10 +297,6 @@ func NewGeneratorWithUpgradeSchedule(us stmgr.UpgradeSchedule) (*ChainGen, error
 	return NewGeneratorWithSectorsAndUpgradeSchedule(1, us)
 }
 
-func (cg *ChainGen) Blockstore() blockstore.Blockstore {
-	return cg.bs
-}
-
 func (cg *ChainGen) StateManager() *stmgr.StateManager {
 	return cg.sm
 }
